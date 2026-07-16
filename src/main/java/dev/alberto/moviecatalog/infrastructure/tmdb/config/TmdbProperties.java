@@ -1,4 +1,4 @@
-package dev.alberto.moviecatalog.infraestructure.tmdb.config;
+package dev.alberto.moviecatalog.infrastructure.tmdb.config;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
