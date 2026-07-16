@@ -4,7 +4,7 @@ spring:
 
   data:
     redis:
-      host: ${REDIS_HOST:127.0.0.1}
+      host: ${REDIS_HOST:localhost}
       port: ${REDIS_PORT:6379}
       username: ${REDIS_USERNAME}
       password: ${REDIS_PASSWORD}
@@ -18,3 +18,30 @@ spring:
       cache-null-values: false
       key-prefix: "movie-catalog::"
       use-key-prefix: true
+
+  cloud:
+    openfeign:
+      client:
+        config:
+          tmdbClient:
+            connect-timeout: 2000
+            read-timeout: 5000
+            logger-level: basic
+
+tmdb:
+  base-url: ${TMDB_BASE_URL:https://api.themoviedb.org/3}
+  access-token: ${TMDB_ACCESS_TOKEN:}
+  default-language: ${TMDB_DEFAULT_LANGUAGE:en-US}
+  default-region: ${TMDB_DEFAULT_REGION:US}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
