@@ -1,25 +1,19 @@
 package dev.alberto.moviecatalog.web.mapper;
 
-import dev.alberto.moviecatalog.domain.model.MoviePage;
 import dev.alberto.moviecatalog.domain.model.MovieSummary;
-import dev.alberto.moviecatalog.web.response.MoviePageResponse;
 import dev.alberto.moviecatalog.web.response.MovieSummaryResponse;
 
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
 public class MovieApiMapper {
 
-    public MoviePageResponse toResponse(MoviePage source) {
-        return new MoviePageResponse(
-                source.page(),
-                source.totalPages(),
-                source.totalResults(),
-                source.results()
-                        .stream()
-                        .map(this::toResponse)
-                        .toList()
-        );
+    public List<MovieSummaryResponse> toResponse(List<MovieSummary> source) {
+        return source.stream()
+                .map(this::toResponse)
+                .toList();
     }
 
     private MovieSummaryResponse toResponse(MovieSummary source) {

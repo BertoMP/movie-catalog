@@ -1,8 +1,10 @@
 package dev.alberto.moviecatalog.domain.service;
 
-import dev.alberto.moviecatalog.domain.model.MoviePage;
+import dev.alberto.moviecatalog.domain.model.MovieSummary;
 import dev.alberto.moviecatalog.domain.model.TrendingWindow;
 
+import java.util.List;
+
 public interface MovieCatalogService {
-    MoviePage getTrendingMovies(TrendingWindow window);
+    List<MovieSummary> getTrendingMovies(TrendingWindow window);
 }

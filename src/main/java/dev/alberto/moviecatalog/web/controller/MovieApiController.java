@@ -1,14 +1,16 @@
 package dev.alberto.moviecatalog.web.controller;
 
-import dev.alberto.moviecatalog.domain.model.MoviePage;
+import dev.alberto.moviecatalog.domain.model.MovieSummary;
 import dev.alberto.moviecatalog.domain.model.TrendingWindow;
 import dev.alberto.moviecatalog.domain.service.MovieCatalogService;
 import dev.alberto.moviecatalog.web.mapper.MovieApiMapper;
-import dev.alberto.moviecatalog.web.response.MoviePageResponse;
+import dev.alberto.moviecatalog.web.response.MovieSummaryResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Validated
 @RestController
@@ -21,14 +23,14 @@ public class MovieApiController {
     private final MovieApiMapper movieApiMapper;
 
     @GetMapping("/trending")
-    public MoviePageResponse getTrendingMovies(@RequestParam(defaultValue = "DAY") TrendingWindow window) {
-        Long startTime = System.currentTimeMillis();
+    public List<MovieSummaryResponse> getTrendingMovies(@RequestParam(defaultValue = "DAY") TrendingWindow window) {
+        long startTime = System.currentTimeMillis();
         log.info("GET /api/v1/movies/trending?window={}", window);
 
-        MoviePage movies =
+        List<MovieSummary> movies =
                 movieCatalogService.getTrendingMovies(window);
 
-        Long endTime = System.currentTimeMillis();
+        long endTime = System.currentTimeMillis();
         log.info("Finished fetching trending movies in {} ms", endTime - startTime);
 
         return movieApiMapper.toResponse(movies);

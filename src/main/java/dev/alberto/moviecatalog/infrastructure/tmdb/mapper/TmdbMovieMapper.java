@@ -1,6 +1,5 @@
 package dev.alberto.moviecatalog.infrastructure.tmdb.mapper;
 
-import dev.alberto.moviecatalog.domain.model.MoviePage;
 import dev.alberto.moviecatalog.domain.model.MovieSummary;
 import dev.alberto.moviecatalog.infrastructure.tmdb.dto.TmdbMoviePageResponse;
 import dev.alberto.moviecatalog.infrastructure.tmdb.dto.TmdbMovieSummaryResponse;
@@ -17,20 +16,13 @@ public class TmdbMovieMapper {
     private static final String IMAGE_BASE_URL =
             "https://image.tmdb.org/t/p/w500";
 
-    public MoviePage toDomain(TmdbMoviePageResponse source) {
-        List<MovieSummary> movies = source.results() == null
+    public List<MovieSummary> toDomainList(TmdbMoviePageResponse source) {
+        return source.results() == null
                 ? List.of()
                 : source.results()
                 .stream()
                 .map(this::toDomain)
                 .toList();
-
-        return new MoviePage(
-                source.page(),
-                source.totalPages(),
-                source.totalResults(),
-                movies
-        );
     }
 
     private MovieSummary toDomain(
