@@ -1,0 +1,19 @@
+spring:
+  docker:
+    compose:
+      enabled: false
+
+  cache:
+    type: none
+
+tmdb:
+  base-url: ${wiremock.tmdb.base-url:http://localhost:9999}/3
+  access-token: test-token
+  default-language: en-US
+  default-region: US
+
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false

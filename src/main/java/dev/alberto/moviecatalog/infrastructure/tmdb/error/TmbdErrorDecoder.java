@@ -18,7 +18,7 @@ import java.util.Map;
 public class TmbdErrorDecoder implements ErrorDecoder {
 
     private static final String DEFAULT_MESSAGE =
-            "Unexpected error comunicating with TMDB";
+            "Unexpected error communicating with TMDB";
 
     private final ObjectMapper objectMapper;
 

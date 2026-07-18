@@ -21,6 +21,8 @@ repositories {
 ext {
     set('springCloudVersion', '2025.1.2')
     set('springdocVersion', '3.0.3')
+    set('instancioVersion', '5.6.0')
+    set('wiremockVersion', '4.0.9')
 }
 
 dependencies {
@@ -56,6 +58,9 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-data-redis-test'
     testImplementation 'org.springframework.boot:spring-boot-starter-validation-test'
     testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
+
+    testImplementation "org.instancio:instancio-junit:${instancioVersion}"
+    testImplementation "org.wiremock.integrations:wiremock-spring-boot:${wiremockVersion}"
 
     testCompileOnly 'org.projectlombok:lombok'
     testAnnotationProcessor 'org.projectlombok:lombok'
