@@ -1,0 +1,63 @@
+package dev.alberto.moviecatalog.application.service;
+
+import dev.alberto.moviecatalog.application.exception.*;
+import dev.alberto.moviecatalog.domain.model.MovieSummary;
+import dev.alberto.moviecatalog.domain.model.TrendingWindow;
+import dev.alberto.moviecatalog.domain.service.MovieCatalogService;
+import dev.alberto.moviecatalog.infrastructure.tmdb.client.TmdbFeignClient;
+import dev.alberto.moviecatalog.infrastructure.tmdb.config.TmdbProperties;
+import dev.alberto.moviecatalog.infrastructure.tmdb.dto.TmdbMoviePageResponse;
+import dev.alberto.moviecatalog.infrastructure.tmdb.exception.*;
+import dev.alberto.moviecatalog.infrastructure.tmdb.mapper.TmdbMovieMapper;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+@RequiredArgsConstructor
+public class MovieCatalogServiceDefault implements MovieCatalogService {
+
+    private final TmdbFeignClient tmdbFeignClient;
+    private final TmdbProperties tmdbProperties;
+    private final TmdbMovieMapper tmdbMovieMapper;
+
+    @Override
+    public List<MovieSummary> getTrendingMovies(TrendingWindow window) {
+        try {
+            TmdbMoviePageResponse response =
+                    tmdbFeignClient.getTrendingMovies(
+                            window.getValue(),
+                            tmdbProperties.defaultLanguage()
+                    );
+
+            return tmdbMovieMapper.toDomainList(response);
+
+        } catch (TmdbException exception) {
+            throw translateProviderException(exception);
+        }
+    }
+
+    private MovieProviderException translateProviderException(
+            TmdbException exception
+    ) {
+        if (exception instanceof TmdbBadRequestException) {
+            return new MovieProviderRequestException(exception);
+        }
+
+        if (exception instanceof TmdbAuthenticationException
+                || exception instanceof TmdbForbiddenException) {
+            return new MovieProviderAccessException(exception);
+        }
+
+        if (exception instanceof TmdbRateLimitException rateLimitException) {
+            return new MovieProviderRateLimitedException(
+                    rateLimitException.getRetryAfterSeconds(),
+                    rateLimitException
+            );
+        }
+
+        return new MovieProviderUnavailableException(exception);
+    }
+}
