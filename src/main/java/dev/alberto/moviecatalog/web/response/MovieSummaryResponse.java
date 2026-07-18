@@ -1,7 +1,10 @@
 package dev.alberto.moviecatalog.web.response;
 
+import lombok.Builder;
+
 import java.time.LocalDate;
 
+@Builder
 public record MovieSummaryResponse(
         Long id,
         String title,

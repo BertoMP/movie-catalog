@@ -1,6 +1,7 @@
 package dev.alberto.moviecatalog.infrastructure.tmdb.client;
 
 import dev.alberto.moviecatalog.infrastructure.tmdb.config.TmdbFeignConfiguration;
+import dev.alberto.moviecatalog.infrastructure.tmdb.dto.TmdbMovieDetailResponse;
 import dev.alberto.moviecatalog.infrastructure.tmdb.dto.TmdbMoviePageResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,6 +18,12 @@ public interface TmdbFeignClient {
     @GetMapping("/trending/movie/{timeWindow}")
     TmdbMoviePageResponse getTrendingMovies(
             @PathVariable("timeWindow") String timeWindow,
+            @RequestParam("language") String language
+    );
+
+    @GetMapping("/movie/{movieId}")
+    TmdbMovieDetailResponse getMovieById(
+            @PathVariable("movieId") Long movieId,
             @RequestParam("language") String language
     );
 }
