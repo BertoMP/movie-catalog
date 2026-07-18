@@ -1,11 +1,14 @@
 package dev.alberto.moviecatalog.application.service;
 
 import dev.alberto.moviecatalog.application.exception.*;
+import dev.alberto.moviecatalog.domain.exception.MovieNotFoundException;
+import dev.alberto.moviecatalog.domain.model.MovieDetail;
 import dev.alberto.moviecatalog.domain.model.MovieSummary;
 import dev.alberto.moviecatalog.domain.model.TrendingWindow;
 import dev.alberto.moviecatalog.domain.service.MovieCatalogService;
 import dev.alberto.moviecatalog.infrastructure.tmdb.client.TmdbFeignClient;
 import dev.alberto.moviecatalog.infrastructure.tmdb.config.TmdbProperties;
+import dev.alberto.moviecatalog.infrastructure.tmdb.dto.TmdbMovieDetailResponse;
 import dev.alberto.moviecatalog.infrastructure.tmdb.dto.TmdbMoviePageResponse;
 import dev.alberto.moviecatalog.infrastructure.tmdb.exception.*;
 import dev.alberto.moviecatalog.infrastructure.tmdb.mapper.TmdbMovieMapper;
@@ -34,6 +37,23 @@ public class MovieCatalogServiceDefault implements MovieCatalogService {
 
             return tmdbMovieMapper.toDomainList(response);
 
+        } catch (TmdbException exception) {
+            throw translateProviderException(exception);
+        }
+    }
+
+    @Override
+    public MovieDetail getMovieDetail(Long movieId) {
+        try {
+            TmdbMovieDetailResponse response =
+                    tmdbFeignClient.getMovieById(
+                            movieId,
+                            tmdbProperties.defaultLanguage()
+                    );
+
+            return tmdbMovieMapper.toDomain(response);
+        } catch (TmdbResourceNotFoundException exception) {
+            throw new MovieNotFoundException(movieId, exception);
         } catch (TmdbException exception) {
             throw translateProviderException(exception);
         }
