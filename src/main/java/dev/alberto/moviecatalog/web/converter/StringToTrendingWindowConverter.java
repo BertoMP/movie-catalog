@@ -7,8 +7,7 @@ import org.springframework.stereotype.Component;
 import java.util.Locale;
 
 @Component
-public class StringToTrendingWindowConverter
-        implements Converter<String, TrendingWindow> {
+public class StringToTrendingWindowConverter implements Converter<String, TrendingWindow> {
 
     @Override
     public TrendingWindow convert(String source) {

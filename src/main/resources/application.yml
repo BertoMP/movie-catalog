@@ -31,8 +31,6 @@ spring:
 tmdb:
   base-url: ${TMDB_BASE_URL:https://api.themoviedb.org/3}
   access-token: ${TMDB_ACCESS_TOKEN:}
-  default-language: ${TMDB_DEFAULT_LANGUAGE:en-US}
-  default-region: ${TMDB_DEFAULT_REGION:US}
 
 management:
   endpoints:
