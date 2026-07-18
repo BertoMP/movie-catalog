@@ -35,6 +35,7 @@ public class TmdbMovieMapper {
                 .title(source.title())
                 .overview(source.overview())
                 .posterUrl(buildImageUrl(source.posterPath()))
+                .backdropUrl(buildImageUrl(source.backdropPath()))
                 .releaseDate(parseReleaseDate(source.releaseDate()))
                 .rating(source.voteAverage())
                 .build();

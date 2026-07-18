@@ -10,6 +10,7 @@ public record MovieSummary(
         String title,
         String overview,
         String posterUrl,
+        String backdropUrl,
         LocalDate releaseDate,
         Double rating
 ) {

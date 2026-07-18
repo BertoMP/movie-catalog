@@ -19,9 +19,6 @@ public record TmdbMovieSummaryResponse(
         @JsonProperty("vote_average")
         Double voteAverage,
 
-        @JsonProperty("vote_count")
-        Integer voteCount,
-
         Double popularity
 ) {
 }
