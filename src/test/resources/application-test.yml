@@ -7,7 +7,7 @@ spring:
     type: none
 
 tmdb:
-  base-url: http://localhost:9999
+  base-url: ${wiremock.tmdb.base-url:http://localhost:9999}/3
   access-token: test-token
   default-language: en-US
   default-region: US
