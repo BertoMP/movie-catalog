@@ -9,6 +9,7 @@ import dev.alberto.moviecatalog.application.exception
 import dev.alberto.moviecatalog.application.exception
         .MovieProviderUnavailableException;
 import dev.alberto.moviecatalog.domain.exception.MovieNotFoundException;
+import dev.alberto.moviecatalog.domain.model.CatalogLanguage;
 import dev.alberto.moviecatalog.domain.model.MovieDetail;
 import dev.alberto.moviecatalog.domain.model.MovieSummary;
 import dev.alberto.moviecatalog.domain.model.TrendingWindow;
@@ -30,12 +31,14 @@ import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito
         .MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import tools.jackson.databind.ObjectMapper;
+import dev.alberto.moviecatalog.web.config.LocaleConfiguration;
 
 import java.util.List;
 
@@ -57,6 +60,7 @@ import static org.springframework.test.web.servlet.result
         .MockMvcResultMatchers.status;
 
 @WebMvcTest(MovieApiController.class)
+@Import(LocaleConfiguration.class)
 class MovieApiControllerTest {
 
     private static final String BASE_PATH =
@@ -101,7 +105,8 @@ class MovieApiControllerTest {
                 );
 
         when(movieCatalogService.getTrendingMovies(
-                TrendingWindow.DAY
+                TrendingWindow.DAY,
+                CatalogLanguage.EN_US
         )).thenReturn(domainMovies);
 
         when(movieApiMapper.toResponse(domainMovies))
@@ -126,7 +131,10 @@ class MovieApiControllerTest {
                 );
 
         verify(movieCatalogService)
-                .getTrendingMovies(TrendingWindow.DAY);
+                .getTrendingMovies(
+                        TrendingWindow.DAY,
+                        CatalogLanguage.EN_US
+                );
 
         verify(movieApiMapper)
                 .toResponse(domainMovies);
@@ -147,7 +155,8 @@ class MovieApiControllerTest {
                 );
 
         when(movieCatalogService.getTrendingMovies(
-                TrendingWindow.WEEK
+                TrendingWindow.WEEK,
+                CatalogLanguage.EN_US
         )).thenReturn(domainMovies);
 
         when(movieApiMapper.toResponse(domainMovies))
@@ -168,7 +177,56 @@ class MovieApiControllerTest {
                 );
 
         verify(movieCatalogService)
-                .getTrendingMovies(TrendingWindow.WEEK);
+                .getTrendingMovies(
+                        TrendingWindow.WEEK,
+                        CatalogLanguage.EN_US
+                );
+    }
+
+    @Test
+    void shouldUseAcceptLanguageHeader()
+            throws Exception {
+
+        List<MovieSummary> domainMovies =
+                MovieSummaryMother.randomList(1);
+
+        List<MovieSummaryResponse> response =
+                List.of(
+                        Instancio.create(
+                                MovieSummaryResponse.class
+                        )
+                );
+
+        when(movieCatalogService.getTrendingMovies(
+                TrendingWindow.DAY,
+                CatalogLanguage.ES_ES
+        )).thenReturn(domainMovies);
+
+        when(movieApiMapper.toResponse(domainMovies))
+                .thenReturn(response);
+
+        mockMvc.perform(
+                        get(BASE_PATH + "/trending")
+                                .header(
+                                        HttpHeaders.ACCEPT_LANGUAGE,
+                                        "es-ES"
+                                )
+                                .accept(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(status().isOk())
+                .andExpect(
+                        content().json(
+                                objectMapper.writeValueAsString(
+                                        response
+                                )
+                        )
+                );
+
+        verify(movieCatalogService)
+                .getTrendingMovies(
+                        TrendingWindow.DAY,
+                        CatalogLanguage.ES_ES
+                );
     }
 
     @Test
@@ -255,7 +313,10 @@ class MovieApiControllerTest {
                         MovieDetailResponse.class
                 );
 
-        when(movieCatalogService.getMovieDetail(movieId))
+        when(movieCatalogService.getMovieDetail(
+                movieId,
+                CatalogLanguage.EN_US
+        ))
                 .thenReturn(domainMovie);
 
         when(movieApiMapper.toResponse(domainMovie))
@@ -280,7 +341,10 @@ class MovieApiControllerTest {
                 );
 
         verify(movieCatalogService)
-                .getMovieDetail(movieId);
+                .getMovieDetail(
+                        movieId,
+                        CatalogLanguage.EN_US
+                );
 
         verify(movieApiMapper)
                 .toResponse(domainMovie);
@@ -292,7 +356,10 @@ class MovieApiControllerTest {
 
         Long movieId = 999_999_999L;
 
-        when(movieCatalogService.getMovieDetail(movieId))
+        when(movieCatalogService.getMovieDetail(
+                movieId,
+                CatalogLanguage.EN_US
+        ))
                 .thenThrow(
                         new MovieNotFoundException(movieId)
                 );
@@ -368,7 +435,8 @@ class MovieApiControllerTest {
             throws Exception {
 
         when(movieCatalogService.getTrendingMovies(
-                TrendingWindow.DAY
+                TrendingWindow.DAY,
+                CatalogLanguage.EN_US
         )).thenThrow(
                 new MovieProviderAccessException(
                         new RuntimeException(
@@ -398,7 +466,8 @@ class MovieApiControllerTest {
             throws Exception {
 
         when(movieCatalogService.getTrendingMovies(
-                TrendingWindow.DAY
+                TrendingWindow.DAY,
+                CatalogLanguage.EN_US
         )).thenThrow(
                 new MovieProviderRequestException(
                         new RuntimeException(
@@ -428,7 +497,8 @@ class MovieApiControllerTest {
             throws Exception {
 
         when(movieCatalogService.getTrendingMovies(
-                TrendingWindow.DAY
+                TrendingWindow.DAY,
+                CatalogLanguage.EN_US
         )).thenThrow(
                 new MovieProviderUnavailableException(
                         new RuntimeException(
@@ -460,7 +530,8 @@ class MovieApiControllerTest {
             throws Exception {
 
         when(movieCatalogService.getTrendingMovies(
-                TrendingWindow.DAY
+                TrendingWindow.DAY,
+                CatalogLanguage.EN_US
         )).thenThrow(
                 new MovieProviderRateLimitedException(
                         60L,

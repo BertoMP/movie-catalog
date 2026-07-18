@@ -36,7 +36,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 )
 class MovieCatalogAcceptanceTest {
 
-    private static final String LANGUAGE = "en-US";
+    private static final String DEFAULT_LANGUAGE = "en-US";
+    private static final String SPANISH_LANGUAGE = "es-ES";
+    private static final String UNSUPPORTED_LANGUAGE = "pt-BR";
 
     private final HttpClient httpClient = HttpClient.newHttpClient();
 
@@ -99,6 +101,56 @@ class MovieCatalogAcceptanceTest {
     }
 
     @Test
+    void shouldUseAcceptLanguageHeader()
+            throws Exception {
+
+        stubTmdbJson(
+                "/3/movie/550",
+                SPANISH_LANGUAGE,
+                200,
+                "tmdb/movie-detail-response.json"
+        );
+
+        HttpResponse<String> response =
+                executeGet(
+                        "/api/v1/movies/550",
+                        SPANISH_LANGUAGE
+                );
+
+        assertThat(response.statusCode())
+                .isEqualTo(200);
+
+        assertThat(response.body())
+                .contains("\"id\":550")
+                .contains("\"title\":\"Fight Club\"");
+    }
+
+    @Test
+    void shouldUseDefaultLanguageWhenAcceptLanguageIsNotSupported()
+            throws Exception {
+
+        stubTmdbJson(
+                "/3/movie/550",
+                DEFAULT_LANGUAGE,
+                200,
+                "tmdb/movie-detail-response.json"
+        );
+
+        HttpResponse<String> response =
+                executeGet(
+                        "/api/v1/movies/550",
+                        UNSUPPORTED_LANGUAGE
+                );
+
+        assertThat(response.statusCode())
+                .isEqualTo(200);
+
+        assertThat(response.body())
+                .contains("\"id\":550")
+                .contains("\"title\":\"Fight Club\"");
+    }
+
+    @Test
     void shouldReturnNotFoundWhenMovieDoesNotExist()
             throws Exception {
 
@@ -126,7 +178,10 @@ class MovieCatalogAcceptanceTest {
 
         tmdbWireMock.stubFor(
                 get(urlPathEqualTo("/3/trending/movie/day"))
-                        .withQueryParam("language", equalTo(LANGUAGE))
+                        .withQueryParam(
+                                "language",
+                                equalTo(DEFAULT_LANGUAGE)
+                        )
                         .willReturn(
                                 aResponse()
                                         .withStatus(429)
@@ -180,9 +235,23 @@ class MovieCatalogAcceptanceTest {
             int status,
             String bodyFile
     ) {
+        stubTmdbJson(
+                path,
+                DEFAULT_LANGUAGE,
+                status,
+                bodyFile
+        );
+    }
+
+    private void stubTmdbJson(
+            String path,
+            String language,
+            int status,
+            String bodyFile
+    ) {
         tmdbWireMock.stubFor(
                 get(urlPathEqualTo(path))
-                        .withQueryParam("language", equalTo(LANGUAGE))
+                        .withQueryParam("language", equalTo(language))
                         .willReturn(
                                 aResponse()
                                         .withStatus(status)
@@ -198,17 +267,30 @@ class MovieCatalogAcceptanceTest {
     private HttpResponse<String> executeGet(String path)
             throws IOException, InterruptedException {
 
-        HttpRequest request = HttpRequest.newBuilder()
+        return executeGet(path, null);
+    }
+
+    private HttpResponse<String> executeGet(
+            String path,
+            String acceptLanguage
+    ) throws IOException, InterruptedException {
+
+        HttpRequest.Builder requestBuilder = HttpRequest.newBuilder()
                 .uri(URI.create("http://localhost:" + port + path))
                 .header(
                         HttpHeaders.ACCEPT,
                         MediaType.APPLICATION_JSON_VALUE
-                )
-                .GET()
-                .build();
+                );
+
+        if (acceptLanguage != null) {
+            requestBuilder.header(
+                    HttpHeaders.ACCEPT_LANGUAGE,
+                    acceptLanguage
+            );
+        }
 
         return httpClient.send(
-                request,
+                requestBuilder.GET().build(),
                 HttpResponse.BodyHandlers.ofString()
         );
     }

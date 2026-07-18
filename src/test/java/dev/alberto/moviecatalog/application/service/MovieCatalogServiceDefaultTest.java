@@ -9,13 +9,12 @@ import dev.alberto.moviecatalog.application.exception
 import dev.alberto.moviecatalog.application.exception
         .MovieProviderUnavailableException;
 import dev.alberto.moviecatalog.domain.exception.MovieNotFoundException;
+import dev.alberto.moviecatalog.domain.model.CatalogLanguage;
 import dev.alberto.moviecatalog.domain.model.MovieDetail;
 import dev.alberto.moviecatalog.domain.model.MovieSummary;
 import dev.alberto.moviecatalog.domain.model.TrendingWindow;
 import dev.alberto.moviecatalog.infrastructure.tmdb.client
         .TmdbFeignClient;
-import dev.alberto.moviecatalog.infrastructure.tmdb.config
-        .TmdbProperties;
 import dev.alberto.moviecatalog.infrastructure.tmdb.dto
         .TmdbMovieDetailResponse;
 import dev.alberto.moviecatalog.infrastructure.tmdb.dto
@@ -45,7 +44,6 @@ import dev.alberto.moviecatalog.testdata.tmdb
 import dev.alberto.moviecatalog.testdata.tmdb
         .TmdbMoviePageResponseMother;
 import org.instancio.junit.InstancioExtension;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -67,7 +65,9 @@ import static org.mockito.Mockito.when;
 })
 class MovieCatalogServiceDefaultTest {
 
-    private static final String LANGUAGE = "en-US";
+    private static final CatalogLanguage LANGUAGE =
+            CatalogLanguage.EN_US;
+
     private static final String METHOD_KEY =
             "TmdbFeignClient#test";
 
@@ -75,19 +75,10 @@ class MovieCatalogServiceDefaultTest {
     private TmdbFeignClient tmdbClient;
 
     @Mock
-    private TmdbProperties tmdbProperties;
-
-    @Mock
     private TmdbMovieMapper tmdbMovieMapper;
 
     @InjectMocks
     private MovieCatalogServiceDefault service;
-
-    @BeforeEach
-    void setUp() {
-        when(tmdbProperties.defaultLanguage())
-                .thenReturn(LANGUAGE);
-    }
 
     @ParameterizedTest
     @EnumSource(TrendingWindow.class)
@@ -102,21 +93,21 @@ class MovieCatalogServiceDefaultTest {
 
         when(tmdbClient.getTrendingMovies(
                 window.getValue(),
-                LANGUAGE
+                LANGUAGE.getValue()
         )).thenReturn(providerResponse);
 
         when(tmdbMovieMapper.toDomainList(providerResponse))
                 .thenReturn(expectedMovies);
 
         List<MovieSummary> result =
-                service.getTrendingMovies(window);
+                service.getTrendingMovies(window, LANGUAGE);
 
         assertThat(result)
                 .isSameAs(expectedMovies);
 
         verify(tmdbClient).getTrendingMovies(
                 window.getValue(),
-                LANGUAGE
+                LANGUAGE.getValue()
         );
 
         verify(tmdbMovieMapper)
@@ -135,21 +126,21 @@ class MovieCatalogServiceDefaultTest {
 
         when(tmdbClient.getMovieById(
                 movieId,
-                LANGUAGE
+                LANGUAGE.getValue()
         )).thenReturn(providerResponse);
 
         when(tmdbMovieMapper.toDomain(providerResponse))
                 .thenReturn(expectedMovie);
 
         MovieDetail result =
-                service.getMovieDetail(movieId);
+                service.getMovieDetail(movieId, LANGUAGE);
 
         assertThat(result)
                 .isSameAs(expectedMovie);
 
         verify(tmdbClient).getMovieById(
                 movieId,
-                LANGUAGE
+                LANGUAGE.getValue()
         );
 
         verify(tmdbMovieMapper)
@@ -170,11 +161,11 @@ class MovieCatalogServiceDefaultTest {
 
         when(tmdbClient.getMovieById(
                 movieId,
-                LANGUAGE
+                LANGUAGE.getValue()
         )).thenThrow(cause);
 
         assertThatThrownBy(
-                () -> service.getMovieDetail(movieId)
+                () -> service.getMovieDetail(movieId, LANGUAGE)
         )
                 .isInstanceOf(MovieNotFoundException.class)
                 .hasCause(cause);
@@ -192,12 +183,13 @@ class MovieCatalogServiceDefaultTest {
 
         when(tmdbClient.getTrendingMovies(
                 TrendingWindow.DAY.getValue(),
-                LANGUAGE
+                LANGUAGE.getValue()
         )).thenThrow(cause);
 
         assertThatThrownBy(
                 () -> service.getTrendingMovies(
-                        TrendingWindow.DAY
+                        TrendingWindow.DAY,
+                        LANGUAGE
                 )
         )
                 .isExactlyInstanceOf(
@@ -218,12 +210,13 @@ class MovieCatalogServiceDefaultTest {
 
         when(tmdbClient.getTrendingMovies(
                 TrendingWindow.DAY.getValue(),
-                LANGUAGE
+                LANGUAGE.getValue()
         )).thenThrow(cause);
 
         assertThatThrownBy(
                 () -> service.getTrendingMovies(
-                        TrendingWindow.DAY
+                        TrendingWindow.DAY,
+                        LANGUAGE
                 )
         )
                 .isExactlyInstanceOf(
@@ -244,12 +237,13 @@ class MovieCatalogServiceDefaultTest {
 
         when(tmdbClient.getTrendingMovies(
                 TrendingWindow.DAY.getValue(),
-                LANGUAGE
+                LANGUAGE.getValue()
         )).thenThrow(cause);
 
         assertThatThrownBy(
                 () -> service.getTrendingMovies(
-                        TrendingWindow.DAY
+                        TrendingWindow.DAY,
+                        LANGUAGE
                 )
         )
                 .isExactlyInstanceOf(
@@ -271,12 +265,13 @@ class MovieCatalogServiceDefaultTest {
 
         when(tmdbClient.getTrendingMovies(
                 TrendingWindow.DAY.getValue(),
-                LANGUAGE
+                LANGUAGE.getValue()
         )).thenThrow(cause);
 
         assertThatThrownBy(
                 () -> service.getTrendingMovies(
-                        TrendingWindow.DAY
+                        TrendingWindow.DAY,
+                        LANGUAGE
                 )
         )
                 .isExactlyInstanceOf(
@@ -304,12 +299,13 @@ class MovieCatalogServiceDefaultTest {
 
         when(tmdbClient.getTrendingMovies(
                 TrendingWindow.DAY.getValue(),
-                LANGUAGE
+                LANGUAGE.getValue()
         )).thenThrow(cause);
 
         assertThatThrownBy(
                 () -> service.getTrendingMovies(
-                        TrendingWindow.DAY
+                        TrendingWindow.DAY,
+                        LANGUAGE
                 )
         )
                 .isExactlyInstanceOf(
@@ -330,12 +326,13 @@ class MovieCatalogServiceDefaultTest {
 
         when(tmdbClient.getTrendingMovies(
                 TrendingWindow.DAY.getValue(),
-                LANGUAGE
+                LANGUAGE.getValue()
         )).thenThrow(cause);
 
         assertThatThrownBy(
                 () -> service.getTrendingMovies(
-                        TrendingWindow.DAY
+                        TrendingWindow.DAY,
+                        LANGUAGE
                 )
         )
                 .isExactlyInstanceOf(
@@ -356,12 +353,13 @@ class MovieCatalogServiceDefaultTest {
 
         when(tmdbClient.getTrendingMovies(
                 TrendingWindow.DAY.getValue(),
-                LANGUAGE
+                LANGUAGE.getValue()
         )).thenThrow(cause);
 
         assertThatThrownBy(
                 () -> service.getTrendingMovies(
-                        TrendingWindow.DAY
+                        TrendingWindow.DAY,
+                        LANGUAGE
                 )
         )
                 .isExactlyInstanceOf(

@@ -1,5 +1,6 @@
 package dev.alberto.moviecatalog.web.controller;
 
+import dev.alberto.moviecatalog.domain.model.CatalogLanguage;
 import dev.alberto.moviecatalog.domain.model.MovieDetail;
 import dev.alberto.moviecatalog.domain.model.MovieSummary;
 import dev.alberto.moviecatalog.domain.model.TrendingWindow;
@@ -14,6 +15,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Locale;
 
 @RestController
 @RequiredArgsConstructor
@@ -25,12 +27,15 @@ public class MovieApiController {
     private final MovieApiMapper movieApiMapper;
 
     @GetMapping("/trending")
-    public List<MovieSummaryResponse> getTrendingMovies(@RequestParam(defaultValue = "DAY") TrendingWindow window) {
+    public List<MovieSummaryResponse> getTrendingMovies(
+            @RequestParam(defaultValue = "DAY") TrendingWindow window,
+            Locale locale
+    ) {
         long startTime = System.currentTimeMillis();
         log.info("GET /api/v1/movies/trending?window={}", window);
 
-        List<MovieSummary> movies =
-                movieCatalogService.getTrendingMovies(window);
+        CatalogLanguage language = CatalogLanguage.fromLocale(locale);
+        List<MovieSummary> movies = movieCatalogService.getTrendingMovies(window, language);
 
         long endTime = System.currentTimeMillis();
         log.info("Finished fetching trending movies in {} ms", endTime - startTime);
@@ -39,12 +44,15 @@ public class MovieApiController {
     }
 
     @GetMapping("/{movieId}")
-    public MovieDetailResponse getMovieDetail(@PathVariable @Positive Long movieId) {
+    public MovieDetailResponse getMovieDetail(
+            @PathVariable @Positive Long movieId,
+            Locale locale
+    ) {
         long startTime = System.currentTimeMillis();
         log.info("GET /api/v1/movies/movie/{}", movieId);
 
-        MovieDetail movieDetail =
-                movieCatalogService.getMovieDetail(movieId);
+        CatalogLanguage language = CatalogLanguage.fromLocale(locale);
+        MovieDetail movieDetail = movieCatalogService.getMovieDetail(movieId, language);
 
         long endTime = System.currentTimeMillis();
         log.info("Finished fetching movie detail in {} ms", endTime - startTime);

@@ -2,12 +2,12 @@ package dev.alberto.moviecatalog.application.service;
 
 import dev.alberto.moviecatalog.application.exception.*;
 import dev.alberto.moviecatalog.domain.exception.MovieNotFoundException;
+import dev.alberto.moviecatalog.domain.model.CatalogLanguage;
 import dev.alberto.moviecatalog.domain.model.MovieDetail;
 import dev.alberto.moviecatalog.domain.model.MovieSummary;
 import dev.alberto.moviecatalog.domain.model.TrendingWindow;
 import dev.alberto.moviecatalog.domain.service.MovieCatalogService;
 import dev.alberto.moviecatalog.infrastructure.tmdb.client.TmdbFeignClient;
-import dev.alberto.moviecatalog.infrastructure.tmdb.config.TmdbProperties;
 import dev.alberto.moviecatalog.infrastructure.tmdb.dto.TmdbMovieDetailResponse;
 import dev.alberto.moviecatalog.infrastructure.tmdb.dto.TmdbMoviePageResponse;
 import dev.alberto.moviecatalog.infrastructure.tmdb.exception.*;
@@ -23,16 +23,15 @@ import java.util.List;
 public class MovieCatalogServiceDefault implements MovieCatalogService {
 
     private final TmdbFeignClient tmdbFeignClient;
-    private final TmdbProperties tmdbProperties;
     private final TmdbMovieMapper tmdbMovieMapper;
 
     @Override
-    public List<MovieSummary> getTrendingMovies(TrendingWindow window) {
+    public List<MovieSummary> getTrendingMovies(TrendingWindow window, CatalogLanguage language) {
         try {
             TmdbMoviePageResponse response =
                     tmdbFeignClient.getTrendingMovies(
                             window.getValue(),
-                            tmdbProperties.defaultLanguage()
+                            language.getValue()
                     );
 
             return tmdbMovieMapper.toDomainList(response);
@@ -43,12 +42,12 @@ public class MovieCatalogServiceDefault implements MovieCatalogService {
     }
 
     @Override
-    public MovieDetail getMovieDetail(Long movieId) {
+    public MovieDetail getMovieDetail(Long movieId, CatalogLanguage language) {
         try {
             TmdbMovieDetailResponse response =
                     tmdbFeignClient.getMovieById(
                             movieId,
-                            tmdbProperties.defaultLanguage()
+                            language.getValue()
                     );
 
             return tmdbMovieMapper.toDomain(response);
