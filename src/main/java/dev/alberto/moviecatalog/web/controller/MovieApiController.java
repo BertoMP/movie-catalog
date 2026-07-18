@@ -7,6 +7,7 @@ import dev.alberto.moviecatalog.domain.service.MovieCatalogService;
 import dev.alberto.moviecatalog.web.mapper.MovieApiMapper;
 import dev.alberto.moviecatalog.web.response.MovieDetailResponse;
 import dev.alberto.moviecatalog.web.response.MovieSummaryResponse;
+import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
@@ -37,13 +38,13 @@ public class MovieApiController {
         return movieApiMapper.toResponse(movies);
     }
 
-    @GetMapping("/movie/{id}")
-    public MovieDetailResponse getMovieDetail(@PathVariable Long id) {
+    @GetMapping("/{movieId}")
+    public MovieDetailResponse getMovieDetail(@PathVariable @Positive Long movieId) {
         long startTime = System.currentTimeMillis();
-        log.info("GET /api/v1/movies/movie/{}", id);
+        log.info("GET /api/v1/movies/movie/{}", movieId);
 
         MovieDetail movieDetail =
-                movieCatalogService.getMovieDetail(id);
+                movieCatalogService.getMovieDetail(movieId);
 
         long endTime = System.currentTimeMillis();
         log.info("Finished fetching movie detail in {} ms", endTime - startTime);
