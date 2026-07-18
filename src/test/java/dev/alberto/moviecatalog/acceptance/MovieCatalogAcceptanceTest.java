@@ -38,6 +38,7 @@ class MovieCatalogAcceptanceTest {
 
     private static final String DEFAULT_LANGUAGE = "en-US";
     private static final String SPANISH_LANGUAGE = "es-ES";
+    private static final String UNSUPPORTED_LANGUAGE = "pt-BR";
 
     private final HttpClient httpClient = HttpClient.newHttpClient();
 
@@ -114,6 +115,31 @@ class MovieCatalogAcceptanceTest {
                 executeGet(
                         "/api/v1/movies/550",
                         SPANISH_LANGUAGE
+                );
+
+        assertThat(response.statusCode())
+                .isEqualTo(200);
+
+        assertThat(response.body())
+                .contains("\"id\":550")
+                .contains("\"title\":\"Fight Club\"");
+    }
+
+    @Test
+    void shouldUseDefaultLanguageWhenAcceptLanguageIsNotSupported()
+            throws Exception {
+
+        stubTmdbJson(
+                "/3/movie/550",
+                DEFAULT_LANGUAGE,
+                200,
+                "tmdb/movie-detail-response.json"
+        );
+
+        HttpResponse<String> response =
+                executeGet(
+                        "/api/v1/movies/550",
+                        UNSUPPORTED_LANGUAGE
                 );
 
         assertThat(response.statusCode())
