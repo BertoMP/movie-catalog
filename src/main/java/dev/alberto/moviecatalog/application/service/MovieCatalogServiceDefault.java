@@ -1,5 +1,6 @@
 package dev.alberto.moviecatalog.application.service;
 
+import dev.alberto.moviecatalog.application.cache.CatalogCacheNames;
 import dev.alberto.moviecatalog.application.exception.*;
 import dev.alberto.moviecatalog.domain.exception.MovieNotFoundException;
 import dev.alberto.moviecatalog.domain.model.CatalogLanguage;
@@ -14,6 +15,7 @@ import dev.alberto.moviecatalog.infrastructure.tmdb.exception.*;
 import dev.alberto.moviecatalog.infrastructure.tmdb.mapper.TmdbMovieMapper;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -26,6 +28,11 @@ public class MovieCatalogServiceDefault implements MovieCatalogService {
     private final TmdbMovieMapper tmdbMovieMapper;
 
     @Override
+    @Cacheable(
+            cacheNames = CatalogCacheNames.TRENDING_MOVIES,
+            key = "#p0.getValue() + '::' + #p1.getValue()",
+            unless = "#result == null || #result.isEmpty()"
+    )
     public List<MovieSummary> getTrendingMovies(TrendingWindow window, CatalogLanguage language) {
         try {
             TmdbMoviePageResponse response =
@@ -42,6 +49,11 @@ public class MovieCatalogServiceDefault implements MovieCatalogService {
     }
 
     @Override
+    @Cacheable(
+            cacheNames = CatalogCacheNames.MOVIE_DETAIL,
+            key = "#p0 + '::' + #p1.getValue()",
+            unless = "#result == null"
+    )
     public MovieDetail getMovieDetail(Long movieId, CatalogLanguage language) {
         try {
             TmdbMovieDetailResponse response =
@@ -58,25 +70,25 @@ public class MovieCatalogServiceDefault implements MovieCatalogService {
         }
     }
 
-    private MovieProviderException translateProviderException(
+    private CatalogProviderException translateProviderException(
             TmdbException exception
     ) {
         if (exception instanceof TmdbBadRequestException) {
-            return new MovieProviderRequestException(exception);
+            return new CatalogProviderRequestException(exception);
         }
 
         if (exception instanceof TmdbAuthenticationException
                 || exception instanceof TmdbForbiddenException) {
-            return new MovieProviderAccessException(exception);
+            return new CatalogProviderAccessException(exception);
         }
 
         if (exception instanceof TmdbRateLimitException rateLimitException) {
-            return new MovieProviderRateLimitedException(
+            return new CatalogProviderRateLimitedException(
                     rateLimitException.getRetryAfterSeconds(),
                     rateLimitException
             );
         }
 
-        return new MovieProviderUnavailableException(exception);
+        return new CatalogProviderUnavailableException(exception);
     }
 }

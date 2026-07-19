@@ -18,7 +18,7 @@ services:
       - /bin/sh
       - -c
       - |
-        printf 'user default off\nuser %s on >%s ~movie-catalog::* &* +@all\n' \
+        printf 'user default off\nuser %s on >%s ~catalog::* &* +@all\n' \
           "$$REDIS_USERNAME" \
           "$$REDIS_PASSWORD" \
           > /tmp/users.acl

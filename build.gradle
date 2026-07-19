@@ -61,6 +61,8 @@ dependencies {
 
     testImplementation "org.instancio:instancio-junit:${instancioVersion}"
     testImplementation "org.wiremock.integrations:wiremock-spring-boot:${wiremockVersion}"
+    testImplementation 'org.testcontainers:testcontainers'
+    testImplementation 'org.testcontainers:testcontainers-junit-jupiter'
 
     testCompileOnly 'org.projectlombok:lombok'
     testAnnotationProcessor 'org.projectlombok:lombok'
