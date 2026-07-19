@@ -1,0 +1,34 @@
+spring:
+  docker:
+    compose:
+      enabled: false
+
+  cache:
+    type: simple
+
+  cloud:
+    discovery:
+      enabled: false
+    service-registry:
+      auto-registration:
+        enabled: false
+
+  data:
+    redis:
+      repositories:
+        enabled: false
+
+catalog:
+  cache:
+    trending-ttl: 1m
+    movie-detail-ttl: 2m
+
+tmdb:
+  base-url: http://localhost:9999/3
+  access-token: test-token
+
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false
