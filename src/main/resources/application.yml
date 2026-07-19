@@ -13,11 +13,6 @@ spring:
 
   cache:
     type: redis
-    redis:
-      time-to-live: 30m
-      cache-null-values: false
-      key-prefix: "movie-catalog::"
-      use-key-prefix: true
 
   cloud:
     openfeign:
@@ -27,6 +22,11 @@ spring:
             connect-timeout: 2000
             read-timeout: 5000
             logger-level: basic
+
+catalog:
+  cache:
+    trending-ttl: ${CATALOG_CACHE_TRENDING_TTL:15m}
+    movie-detail-ttl: ${CATALOG_CACHE_MOVIE_DETAIL_TTL:6h}
 
 tmdb:
   base-url: ${TMDB_BASE_URL:https://api.themoviedb.org/3}
