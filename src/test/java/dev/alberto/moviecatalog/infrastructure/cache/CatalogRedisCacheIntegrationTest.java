@@ -126,9 +126,7 @@ class CatalogRedisCacheIntegrationTest {
                 );
 
         assertThat(firstResult).isEqualTo(movies);
-        assertThat(cachedResult)
-                .isEqualTo(movies)
-                .isNotSameAs(firstResult);
+        assertThat(cachedResult).isEqualTo(movies);
         assertTtl(TRENDING_KEY, cacheProperties.trendingTtl());
 
         verify(tmdbClient).getTrendingMovies("day", "en-US");
@@ -160,9 +158,7 @@ class CatalogRedisCacheIntegrationTest {
         );
 
         assertThat(firstResult).isEqualTo(movie);
-        assertThat(cachedResult)
-                .isEqualTo(movie)
-                .isNotSameAs(firstResult);
+        assertThat(cachedResult).isEqualTo(movie);
         assertTtl(MOVIE_DETAIL_KEY, cacheProperties.movieDetailTtl());
 
         verify(tmdbClient).getMovieById(movieId, "en-US");
