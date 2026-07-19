@@ -1,9 +1,9 @@
 package dev.alberto.moviecatalog.web.error;
 
-import dev.alberto.moviecatalog.application.exception.MovieProviderAccessException;
-import dev.alberto.moviecatalog.application.exception.MovieProviderRateLimitedException;
-import dev.alberto.moviecatalog.application.exception.MovieProviderRequestException;
-import dev.alberto.moviecatalog.application.exception.MovieProviderUnavailableException;
+import dev.alberto.moviecatalog.application.exception.CatalogProviderAccessException;
+import dev.alberto.moviecatalog.application.exception.CatalogProviderRateLimitedException;
+import dev.alberto.moviecatalog.application.exception.CatalogProviderRequestException;
+import dev.alberto.moviecatalog.application.exception.CatalogProviderUnavailableException;
 import dev.alberto.moviecatalog.domain.exception.MovieNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -42,49 +42,49 @@ public class GlobalExceptionHandler {
         );
     }
 
-    @ExceptionHandler(MovieProviderRequestException.class)
+    @ExceptionHandler(CatalogProviderRequestException.class)
     public ResponseEntity<ApiErrorResponse> handleProviderRequest(
-            MovieProviderRequestException exception,
+            CatalogProviderRequestException exception,
             HttpServletRequest request
     ) {
         log.error(
-                "The movie provider rejected the request",
+                "The catalog provider rejected the request",
                 exception
         );
 
         return buildResponse(
                 HttpStatus.BAD_GATEWAY,
-                "MOVIE_PROVIDER_REQUEST_ERROR",
-                "The movie provider rejected the request",
+                "CATALOG_PROVIDER_REQUEST_ERROR",
+                "The catalog provider rejected the request",
                 request
         );
     }
 
-    @ExceptionHandler(MovieProviderAccessException.class)
+    @ExceptionHandler(CatalogProviderAccessException.class)
     public ResponseEntity<ApiErrorResponse> handleProviderAccess(
-            MovieProviderAccessException exception,
+            CatalogProviderAccessException exception,
             HttpServletRequest request
     ) {
         log.error(
-                "The movie provider rejected the service credentials",
+                "The catalog provider rejected the service credentials",
                 exception
         );
 
         return buildResponse(
                 HttpStatus.BAD_GATEWAY,
-                "MOVIE_PROVIDER_ACCESS_ERROR",
-                "The movie provider rejected the service credentials",
+                "CATALOG_PROVIDER_ACCESS_ERROR",
+                "The catalog provider rejected the service credentials",
                 request
         );
     }
 
-    @ExceptionHandler(MovieProviderRateLimitedException.class)
+    @ExceptionHandler(CatalogProviderRateLimitedException.class)
     public ResponseEntity<ApiErrorResponse> handleProviderRateLimit(
-            MovieProviderRateLimitedException exception,
+            CatalogProviderRateLimitedException exception,
             HttpServletRequest request
     ) {
         log.warn(
-                "The movie provider rate limit was exceeded. Retry after: {}",
+                "The catalog provider rate limit was exceeded. Retry after: {}",
                 exception.getRetryAfterSeconds()
         );
 
@@ -101,27 +101,27 @@ public class GlobalExceptionHandler {
         return response.body(
                 createError(
                         HttpStatus.SERVICE_UNAVAILABLE,
-                        "MOVIE_PROVIDER_RATE_LIMITED",
-                        "The movie provider is temporarily rate limited",
+                        "CATALOG_PROVIDER_RATE_LIMITED",
+                        "The catalog provider is temporarily rate limited",
                         request
                 )
         );
     }
 
-    @ExceptionHandler(MovieProviderUnavailableException.class)
+    @ExceptionHandler(CatalogProviderUnavailableException.class)
     public ResponseEntity<ApiErrorResponse> handleProviderUnavailable(
-            MovieProviderUnavailableException exception,
+            CatalogProviderUnavailableException exception,
             HttpServletRequest request
     ) {
         log.error(
-                "The movie provider is unavailable",
+                "The catalog provider is unavailable",
                 exception
         );
 
         return buildResponse(
                 HttpStatus.SERVICE_UNAVAILABLE,
-                "MOVIE_PROVIDER_UNAVAILABLE",
-                "The movie provider is currently unavailable",
+                "CATALOG_PROVIDER_UNAVAILABLE",
+                "The catalog provider is currently unavailable",
                 request
         );
     }

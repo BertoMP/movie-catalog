@@ -209,7 +209,8 @@ class MovieCatalogAcceptanceTest {
                 .contains("60");
 
         assertThat(response.body())
-                .contains("\"code\":\"MOVIE_PROVIDER_RATE_LIMITED\"")
+                .contains("\"code\":\"CATALOG_PROVIDER_RATE_LIMITED\"")
+                .contains("\"message\":\"The catalog provider is temporarily rate limited\"")
                 .contains("\"status\":503");
     }
 

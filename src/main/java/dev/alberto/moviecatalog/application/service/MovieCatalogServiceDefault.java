@@ -58,25 +58,25 @@ public class MovieCatalogServiceDefault implements MovieCatalogService {
         }
     }
 
-    private MovieProviderException translateProviderException(
+    private CatalogProviderException translateProviderException(
             TmdbException exception
     ) {
         if (exception instanceof TmdbBadRequestException) {
-            return new MovieProviderRequestException(exception);
+            return new CatalogProviderRequestException(exception);
         }
 
         if (exception instanceof TmdbAuthenticationException
                 || exception instanceof TmdbForbiddenException) {
-            return new MovieProviderAccessException(exception);
+            return new CatalogProviderAccessException(exception);
         }
 
         if (exception instanceof TmdbRateLimitException rateLimitException) {
-            return new MovieProviderRateLimitedException(
+            return new CatalogProviderRateLimitedException(
                     rateLimitException.getRetryAfterSeconds(),
                     rateLimitException
             );
         }
 
-        return new MovieProviderUnavailableException(exception);
+        return new CatalogProviderUnavailableException(exception);
     }
 }

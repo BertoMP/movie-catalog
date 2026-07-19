@@ -1,8 +1,8 @@
 package dev.alberto.moviecatalog.application.exception;
 
-public abstract class MovieProviderException extends RuntimeException {
+public abstract class CatalogProviderException extends RuntimeException {
 
-    protected MovieProviderException(
+    protected CatalogProviderException(
             String message,
             Throwable cause
     ) {

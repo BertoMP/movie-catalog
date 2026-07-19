@@ -1,13 +1,9 @@
 package dev.alberto.moviecatalog.web.controller;
 
-import dev.alberto.moviecatalog.application.exception
-        .MovieProviderAccessException;
-import dev.alberto.moviecatalog.application.exception
-        .MovieProviderRateLimitedException;
-import dev.alberto.moviecatalog.application.exception
-        .MovieProviderRequestException;
-import dev.alberto.moviecatalog.application.exception
-        .MovieProviderUnavailableException;
+import dev.alberto.moviecatalog.application.exception.CatalogProviderAccessException;
+import dev.alberto.moviecatalog.application.exception.CatalogProviderRateLimitedException;
+import dev.alberto.moviecatalog.application.exception.CatalogProviderRequestException;
+import dev.alberto.moviecatalog.application.exception.CatalogProviderUnavailableException;
 import dev.alberto.moviecatalog.domain.exception.MovieNotFoundException;
 import dev.alberto.moviecatalog.domain.model.CatalogLanguage;
 import dev.alberto.moviecatalog.domain.model.MovieDetail;
@@ -438,7 +434,7 @@ class MovieApiControllerTest {
                 TrendingWindow.DAY,
                 CatalogLanguage.EN_US
         )).thenThrow(
-                new MovieProviderAccessException(
+                new CatalogProviderAccessException(
                         new RuntimeException(
                                 "Invalid provider token"
                         )
@@ -452,7 +448,13 @@ class MovieApiControllerTest {
                 .andExpect(
                         jsonPath("$.code")
                                 .value(
-                                        "MOVIE_PROVIDER_ACCESS_ERROR"
+                                        "CATALOG_PROVIDER_ACCESS_ERROR"
+                                )
+                )
+                .andExpect(
+                        jsonPath("$.message")
+                                .value(
+                                        "The catalog provider rejected the service credentials"
                                 )
                 )
                 .andExpect(
@@ -469,7 +471,7 @@ class MovieApiControllerTest {
                 TrendingWindow.DAY,
                 CatalogLanguage.EN_US
         )).thenThrow(
-                new MovieProviderRequestException(
+                new CatalogProviderRequestException(
                         new RuntimeException(
                                 "Invalid provider request"
                         )
@@ -483,7 +485,13 @@ class MovieApiControllerTest {
                 .andExpect(
                         jsonPath("$.code")
                                 .value(
-                                        "MOVIE_PROVIDER_REQUEST_ERROR"
+                                        "CATALOG_PROVIDER_REQUEST_ERROR"
+                                )
+                )
+                .andExpect(
+                        jsonPath("$.message")
+                                .value(
+                                        "The catalog provider rejected the request"
                                 )
                 )
                 .andExpect(
@@ -500,7 +508,7 @@ class MovieApiControllerTest {
                 TrendingWindow.DAY,
                 CatalogLanguage.EN_US
         )).thenThrow(
-                new MovieProviderUnavailableException(
+                new CatalogProviderUnavailableException(
                         new RuntimeException(
                                 "Provider unavailable"
                         )
@@ -516,7 +524,13 @@ class MovieApiControllerTest {
                 .andExpect(
                         jsonPath("$.code")
                                 .value(
-                                        "MOVIE_PROVIDER_UNAVAILABLE"
+                                        "CATALOG_PROVIDER_UNAVAILABLE"
+                                )
+                )
+                .andExpect(
+                        jsonPath("$.message")
+                                .value(
+                                        "The catalog provider is currently unavailable"
                                 )
                 )
                 .andExpect(
@@ -533,7 +547,7 @@ class MovieApiControllerTest {
                 TrendingWindow.DAY,
                 CatalogLanguage.EN_US
         )).thenThrow(
-                new MovieProviderRateLimitedException(
+                new CatalogProviderRateLimitedException(
                         60L,
                         new RuntimeException(
                                 "Rate limit exceeded"
@@ -556,7 +570,13 @@ class MovieApiControllerTest {
                 .andExpect(
                         jsonPath("$.code")
                                 .value(
-                                        "MOVIE_PROVIDER_RATE_LIMITED"
+                                        "CATALOG_PROVIDER_RATE_LIMITED"
+                                )
+                )
+                .andExpect(
+                        jsonPath("$.message")
+                                .value(
+                                        "The catalog provider is temporarily rate limited"
                                 )
                 )
                 .andExpect(

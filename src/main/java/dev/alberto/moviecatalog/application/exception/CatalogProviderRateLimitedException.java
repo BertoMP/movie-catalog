@@ -3,17 +3,17 @@ package dev.alberto.moviecatalog.application.exception;
 import lombok.Getter;
 
 @Getter
-public class MovieProviderRateLimitedException
-        extends MovieProviderException {
+public class CatalogProviderRateLimitedException
+        extends CatalogProviderException {
 
     private final Long retryAfterSeconds;
 
-    public MovieProviderRateLimitedException(
+    public CatalogProviderRateLimitedException(
             Long retryAfterSeconds,
             Throwable cause
     ) {
         super(
-                "The movie provider rate limit has been exceeded",
+                "The catalog provider rate limit has been exceeded",
                 cause
         );
 

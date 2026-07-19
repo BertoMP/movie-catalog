@@ -1,13 +1,9 @@
 package dev.alberto.moviecatalog.application.service;
 
-import dev.alberto.moviecatalog.application.exception
-        .MovieProviderAccessException;
-import dev.alberto.moviecatalog.application.exception
-        .MovieProviderRateLimitedException;
-import dev.alberto.moviecatalog.application.exception
-        .MovieProviderRequestException;
-import dev.alberto.moviecatalog.application.exception
-        .MovieProviderUnavailableException;
+import dev.alberto.moviecatalog.application.exception.CatalogProviderAccessException;
+import dev.alberto.moviecatalog.application.exception.CatalogProviderRateLimitedException;
+import dev.alberto.moviecatalog.application.exception.CatalogProviderRequestException;
+import dev.alberto.moviecatalog.application.exception.CatalogProviderUnavailableException;
 import dev.alberto.moviecatalog.domain.exception.MovieNotFoundException;
 import dev.alberto.moviecatalog.domain.model.CatalogLanguage;
 import dev.alberto.moviecatalog.domain.model.MovieDetail;
@@ -193,7 +189,10 @@ class MovieCatalogServiceDefaultTest {
                 )
         )
                 .isExactlyInstanceOf(
-                        MovieProviderRequestException.class
+                        CatalogProviderRequestException.class
+                )
+                .hasMessage(
+                        "The catalog provider rejected the request"
                 )
                 .hasCause(cause);
     }
@@ -220,7 +219,10 @@ class MovieCatalogServiceDefaultTest {
                 )
         )
                 .isExactlyInstanceOf(
-                        MovieProviderAccessException.class
+                        CatalogProviderAccessException.class
+                )
+                .hasMessage(
+                        "The catalog provider rejected the service credentials"
                 )
                 .hasCause(cause);
     }
@@ -247,7 +249,10 @@ class MovieCatalogServiceDefaultTest {
                 )
         )
                 .isExactlyInstanceOf(
-                        MovieProviderAccessException.class
+                        CatalogProviderAccessException.class
+                )
+                .hasMessage(
+                        "The catalog provider rejected the service credentials"
                 )
                 .hasCause(cause);
     }
@@ -275,12 +280,15 @@ class MovieCatalogServiceDefaultTest {
                 )
         )
                 .isExactlyInstanceOf(
-                        MovieProviderRateLimitedException.class
+                        CatalogProviderRateLimitedException.class
+                )
+                .hasMessage(
+                        "The catalog provider rate limit has been exceeded"
                 )
                 .hasCause(cause)
                 .satisfies(exception -> {
-                    MovieProviderRateLimitedException rateLimit =
-                            (MovieProviderRateLimitedException) exception;
+                    CatalogProviderRateLimitedException rateLimit =
+                            (CatalogProviderRateLimitedException) exception;
 
                     assertThat(rateLimit.getRetryAfterSeconds())
                             .isEqualTo(60L);
@@ -309,7 +317,10 @@ class MovieCatalogServiceDefaultTest {
                 )
         )
                 .isExactlyInstanceOf(
-                        MovieProviderUnavailableException.class
+                        CatalogProviderUnavailableException.class
+                )
+                .hasMessage(
+                        "The catalog provider is currently unavailable"
                 )
                 .hasCause(cause);
     }
@@ -336,7 +347,10 @@ class MovieCatalogServiceDefaultTest {
                 )
         )
                 .isExactlyInstanceOf(
-                        MovieProviderUnavailableException.class
+                        CatalogProviderUnavailableException.class
+                )
+                .hasMessage(
+                        "The catalog provider is currently unavailable"
                 )
                 .hasCause(cause);
     }
@@ -363,7 +377,10 @@ class MovieCatalogServiceDefaultTest {
                 )
         )
                 .isExactlyInstanceOf(
-                        MovieProviderUnavailableException.class
+                        CatalogProviderUnavailableException.class
+                )
+                .hasMessage(
+                        "The catalog provider is currently unavailable"
                 )
                 .hasCause(cause);
     }
